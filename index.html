@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Герлов | OSINT</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #1e1e1e;
+      color: #ccc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+    }
+    header {
+      background: #2a2a2a;
+      padding: 30px 20px;
+      text-align: center;
+      border-bottom: 4px solid #666;
+      box-shadow: 0 0 15px #444;
+    }
+    header h1 {
+      font-size: 2.6rem;
+      color: #aaa;
+      letter-spacing: 0.12em;
+      text-shadow:
+        0 0 5px #888,
+        0 0 15px #777;
+    }
+    nav {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    nav a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 10px 20px;
+      border: 2px solid #666;
+      border-radius: 5px;
+      font-weight: 700;
+      box-shadow: 0 0 8px #444 inset;
+      transition: all 0.3s ease;
+    }
+    nav a:hover,
+    nav a.active {
+      background: #444;
+      color: #fff;
+      box-shadow:
+        0 0 10px #555,
+        0 0 20px #666;
+    }
+    main {
+      flex: 1;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    section {
+      display: none;
+      animation: fadeIn 0.6s ease-in-out forwards;
+      opacity: 0;
+    }
+    section.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      color: #aaa;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px #777;
+    }
+    .block {
+      background: #2a2a2a;
+      border-left: 5px solid #555;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px #333;
+    }
+    .block strong {
+      color: #bbb;
+    }
+    .terminal {
+      background: #1a1a1a;
+      color: #bbb;
+      padding: 20px;
+      border: 2px solid #555;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      box-shadow: 0 0 15px #333 inset;
+    }
+    ul {
+      margin: 10px 0 20px 20px;
+    }
+    footer {
+      background: #2a2a2a;
+      padding: 15px;
+      text-align: center;
+      color: #777;
+      font-size: 0.9rem;
+      box-shadow: inset 0 0 10px #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ГЕРЛОВ</h1>
+    <nav>
+      <a href="#bio" class="active" onclick="showTab('bio', this)">BIO</a>
+      <a href="#price" onclick="showTab('price', this)">PRICE</a>
+      <a href="#contact" onclick="showTab('contact', this)">CONTACT</a>
+    </nav>
+  </header>
+  <main>
+    <section id="bio" class="active">
+      <h2>BIO</h2>
+      <div class="block">
+        <p><strong>Я — Герлов.</strong></p>
+        <p>Зашёл в КМ в 2023-м. Был обычным шкiлом: логгеры, IP, вирусы — всё подряд. Иногда и мне влетало.</p>
+        <p>Потом зацепился за OSINT. Разведка, поиск, доксы, базы, тулы, схемы — рыл всё, даже если не въезжал сразу.</p>
+        <p>Теперь несу в мир защиту. Помогаю тем, кто реально нуждается. Скамеров — нахуй.</p>
+      </div>
+      <div class="block">
+        <p><strong>Бесплатный деф</strong> — только для мирных.</p>
+        <p>Подпишись: <a href="https://t.me/gerlovih" target="_blank">@gerlovih</a></p>
+        <p>В био: <code>мой деф @aptANGEL</code></p>
+        <p><strong>Не мирным — 5$ навсегда.</strong></p>
+      </div>
+      <div class="block">
+        <p>Если ты скамер — и тебя снесли даже после оплаты — сам виноват. Помочь могу, но гарантий 0.</p>
+        <p>Если тебя скамнули — тоже не пиши. Базар был до.</p>
+      </div>
+      <div class="terminal">
+        Герлов | @aptANGEL
+        Возраст: 1*
+        Происхождение: неизвестно
+        Каста: OSINT
+        Проект: t.me/degniu_def
+        Статус: В КМ
+        Клан: #харизма
+        Тег: @aptANGEL
+
+        ПРОСЬБА:
+        Не пиши мне про то что на меня едет сват или я уже лежу в доксбине и прочую хуйню. Мне вообще похуй. 
+        Вся эта хуета сразу летит в помойку.
+        Ты — манядоксер, лет 12. Когда те будет реально пиздец сразу сольешся.
+      </div>
+    </section>
+
+    <section id="price">
+      <h2>PRICE</h2>
+      <div class="block">Запугать обидчика — <strong>2$</strong></div>
+      <div class="block">Фулл пробив — <strong>6$</strong></div>
+      <div class="block">ФИО + номер — <strong>2$</strong></div>
+      <div class="block">Снос аккаунтов — <strong>НЕ ДЕЛАЮ</strong></div>
+      <h3 style="margin-top: 30px; color: #bbb;">Также продаю:</h3>
+      <ul>
+        <li>софты</li>
+        <li>тулки</li>
+        <li>обучения</li>
+        <li>видео по доксу</li>
+      </ul>
+      <p><strong>Оплата:</strong> @send</p>
+    </section>
+
+    <section id="contact">
+      <h2>CONTACT</h2>
+      <p>Связь: <strong>@aptANGEL</strong></p>
+    </section>
+  </main>
+  <footer>
+    &copy; Герлов. 
+  </footer>
+  <script>
+    function showTab(id, el) {
+      document.querySelectorAll('main section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>
