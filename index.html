@@ -1,197 +1,525 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Герлов | OSINT</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GERLOV | OSINT</title>
+<style>
+  /* Сброс и базовые стили */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  body {
+    background-color: #0a0a0a;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: default;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  canvas#bg {
+    position: fixed;
+    z-index: -1;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    display: block;
+    pointer-events: none;
+  }
+  header {
+    background-color: #111;
+    padding: 25px 20px;
+    border-bottom: 3px solid #8b0000;
+    box-shadow: 0 0 12px #8b000088;
+    text-align: center;
+    user-select: none;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    animation: headerGlow 6s ease-in-out infinite alternate;
+  }
+  @keyframes headerGlow {
+    0% {
+      box-shadow: 0 0 8px #5a000055;
+      border-color: #5a0000;
     }
-    body {
-      background: #1e1e1e;
-      color: #ccc;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
+    50% {
+      box-shadow: 0 0 16px #b2222200;
+      border-color: #b22222;
     }
-    header {
-      background: #2a2a2a;
-      padding: 30px 20px;
-      text-align: center;
-      border-bottom: 4px solid #666;
-      box-shadow: 0 0 15px #444;
+    100% {
+      box-shadow: 0 0 12px #7f000033;
+      border-color: #7f0000;
     }
-    header h1 {
-      font-size: 2.6rem;
-      color: #aaa;
-      letter-spacing: 0.12em;
-      text-shadow:
-        0 0 5px #888,
-        0 0 15px #777;
+  }
+  header h1 {
+    font-size: 2.8rem;
+    color: #a50000;
+    text-shadow:
+      0 0 5px #7f0000aa,
+      0 0 10px #a5000055;
+    letter-spacing: 0.2em;
+    font-weight: 900;
+  }
+  nav {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+  nav a {
+    color: #eee;
+    text-decoration: none;
+    font-weight: 900;
+    padding: 12px 28px;
+    border: 2px solid #8b0000;
+    border-radius: 6px;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      box-shadow 0.4s ease,
+      transform 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.15rem;
+    box-shadow: inset 0 0 6px #8b000044;
+    display: inline-block;
+    text-shadow: 0 0 3px #7f0000aa;
+  }
+  nav a.active,
+  nav a:hover {
+    background-color: #8b0000;
+    color: #111;
+    box-shadow:
+      0 0 8px #a50000cc,
+      0 0 14px #a50000cc,
+      inset 0 0 12px #b22222cc;
+    transform: scale(1.07);
+  }
+  main {
+    flex-grow: 1;
+    max-width: 960px;
+    margin: 40px auto 50px;
+    padding: 0 24px;
+    z-index: 5;
+    position: relative;
+  }
+  section {
+    display: none;
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+  }
+  section.active {
+    display: block;
+    opacity: 1;
+  }
+  h2 {
+    color: #8b0000;
+    text-shadow:
+      0 0 6px #7f0000bb;
+    font-weight: 900;
+    font-size: 2.2rem;
+    margin-bottom: 28px;
+    letter-spacing: 0.1em;
+    animation: glowPulse 4s ease-in-out infinite alternate;
+  }
+  @keyframes glowPulse {
+    0% {
+      text-shadow: 0 0 6px #7f000055;
+      color: #7a0000;
     }
+    50% {
+      text-shadow: 0 0 16px #b2222244;
+      color: #a00000;
+    }
+    100% {
+      text-shadow: 0 0 8px #8b000033;
+      color: #7a0000;
+    }
+  }
+  p, li {
+    font-size: 1.18rem;
+    margin-bottom: 20px;
+    user-select: text;
+    line-height: 1.45;
+  }
+  ul {
+    margin-left: 24px;
+    margin-bottom: 22px;
+  }
+  code {
+    background-color: #33000a;
+    color: #a00000;
+    text-shadow:
+      0 0 4px rgba(160, 0, 0, 0.5),
+      0 0 10px rgba(160, 0, 0, 0.3);
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    user-select: text;
+    font-weight: 700;
+  }
+  a {
+    color: #8b0000;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+    font-weight: 900;
+    text-shadow:
+      0 0 3px rgba(160, 0, 0, 0.4);
+  }
+  a:hover {
+    color: #b22222;
+    text-shadow:
+      0 0 8px rgba(178, 34, 34, 0.7);
+  }
+  .price-item {
+    background-color: #111;
+    border-left: 5px solid #8b0000;
+    padding: 22px 26px;
+    margin-bottom: 28px;
+    box-shadow: 0 0 16px #55000033;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    user-select: text;
+  }
+  .price-item:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 24px #a00000aa;
+  }
+  .price-item strong {
+    color: #b22222;
+  }
+  .sudo-terminal {
+    background-color: rgba(17, 17, 17, 0.85);
+    border: 2px solid #8b0000;
+    padding: 25px 22px;
+    border-radius: 8px;
+    box-shadow: 0 0 18px rgba(139, 0, 0, 0.3);
+    color: #eee;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    user-select: text;
+    margin-top: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    animation: terminalGlow 5s ease-in-out infinite alternate;
+  }
+  .sudo-terminal:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 28px rgba(178, 34, 34, 0.6);
+  }
+  .sudo-title {
+    font-weight: 900;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-align: center;
+    letter-spacing: 0.1em;
+    color: #8b0000;
+    text-shadow: 0 0 8px rgba(139, 0, 0, 0.7);
+    animation: glowPulse 4s ease-in-out infinite alternate;
+  }
+  footer {
+    background-color: #111;
+    text-align: center;
+    padding: 20px 24px;
+    color: #555;
+    font-size: 0.9rem;
+    user-select: none;
+    box-shadow: inset 0 0 20px #55000033;
+    animation: footerGlow 6s ease-in-out infinite alternate;
+  }
+  @keyframes footerGlow {
+    0% { box-shadow: inset 0 0 12px #40000022; }
+    50% { box-shadow: inset 0 0 24px #8b000044; }
+    100% { box-shadow: inset 0 0 16px #60000033; }
+  }
+  @keyframes terminalGlow {
+    0% {
+      box-shadow: 0 0 12px rgba(139, 0, 0, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 24px rgba(178, 34, 34, 0.5);
+    }
+    100% {
+      box-shadow: 0 0 18px rgba(139, 0, 0, 0.3);
+    }
+  }
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (max-width: 480px) {
     nav {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
+      flex-direction: column;
+      gap: 14px;
     }
     nav a {
-      color: #ccc;
-      text-decoration: none;
-      padding: 10px 20px;
-      border: 2px solid #666;
-      border-radius: 5px;
-      font-weight: 700;
-      box-shadow: 0 0 8px #444 inset;
-      transition: all 0.3s ease;
-    }
-    nav a:hover,
-    nav a.active {
-      background: #444;
-      color: #fff;
-      box-shadow:
-        0 0 10px #555,
-        0 0 20px #666;
+      padding: 14px 18px;
+      font-size: 1.1rem;
     }
     main {
-      flex: 1;
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 0 20px;
+      margin: 30px 18px 40px;
+      padding: 0 14px;
     }
-    section {
-      display: none;
-      animation: fadeIn 0.6s ease-in-out forwards;
-      opacity: 0;
-    }
-    section.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    h2 {
-      color: #aaa;
-      font-size: 2rem;
-      margin-bottom: 20px;
-      text-shadow: 0 0 8px #777;
-    }
-    .block {
-      background: #2a2a2a;
-      border-left: 5px solid #555;
-      padding: 20px;
-      margin-bottom: 25px;
-      border-radius: 6px;
-      box-shadow: 0 0 10px #333;
-    }
-    .block strong {
-      color: #bbb;
-    }
-    .terminal {
-      background: #1a1a1a;
-      color: #bbb;
-      padding: 20px;
-      border: 2px solid #555;
-      border-radius: 8px;
-      font-family: monospace;
-      white-space: pre-wrap;
-      box-shadow: 0 0 15px #333 inset;
-    }
-    ul {
-      margin: 10px 0 20px 20px;
-    }
-    footer {
-      background: #2a2a2a;
-      padding: 15px;
-      text-align: center;
-      color: #777;
-      font-size: 0.9rem;
-      box-shadow: inset 0 0 10px #333;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
+  <canvas id="bg"></canvas>
   <header>
-    <h1>ГЕРЛОВ</h1>
+    <h1>GERLOV</h1>
     <nav>
       <a href="#bio" class="active" onclick="showTab('bio', this)">BIO</a>
       <a href="#price" onclick="showTab('price', this)">PRICE</a>
+      <a href="#shop" onclick="showTab('shop', this)">SHOP</a>
       <a href="#contact" onclick="showTab('contact', this)">CONTACT</a>
     </nav>
   </header>
   <main>
-    <section id="bio" class="active">
+    <!-- BIO -->
+    <section id="bio" class="active" role="region" aria-label="Biography">
       <h2>BIO</h2>
-      <div class="block">
+      <div class="price-item" tabindex="0">
         <p><strong>Я — Герлов.</strong></p>
-        <p>Зашёл в КМ в 2023-м. Был обычным шкiлом: логгеры, IP, вирусы — всё подряд. Иногда и мне влетало.</p>
-        <p>Потом зацепился за OSINT. Разведка, поиск, доксы, базы, тулы, схемы — рыл всё, даже если не въезжал сразу.</p>
-        <p>Теперь несу в мир защиту. Помогаю тем, кто реально нуждается. Скамеров — нахуй.</p>
+        <p>Залетел в КМ в 2023 году. Изначально был обычным школьником — кидал логгеры, чекал IP и страдал короче полной хуйней. Еще всем подряд кидал вирусы, сообственно, мне тоже кидали и порой я даже попадался.</p>
+        <p>Со временем меня всерьёз зацепила тема <strong>OSINT</strong> — интернет-разведка, анализ, поиск. Я начал изучать её по-крупному: базы, пробивы, тулы, доксинг, схемы — изучал всё, что можно было, хоть мне было много чего непонятно.</p>
+        <p>Сейчас я использую свой опыт и знания не для деструктива, а для защиты мирных. Помогаю тем, кто реально нуждается, и параллельно истребляю скамеров и прочий цифровой мусор.</p>
+        <p><strong>Хочешь бесплатный деф? (только для мирных)<br>
+        Сабнись на мой ТГК: <a href="https://t.me/gerlovih" target="_blank" rel="noopener noreferrer">@gerlovih</a></strong></p>
+        <p>Поставь в био: <code style="
+  background-color: #33000a;
+  color: #7a0000;
+  text-shadow:
+    0 0 3px rgba(122, 0, 0, 0.5),
+    0 0 6px rgba(122, 0, 0, 0.3);
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+">мой деф @aptANGEL</code></p>
+
+        <p><strong>Не мирным — деф $5 (навсегда)</strong></p>
+        <p>❗ Если ты скамер и после покупки дефа тебя бахнули — это уже твои проблемы. Я постараюсь помочь, но не гарантирую.</p>
+        <p>❗ Если тебя скамнули — не пиши мне. Ты сам виноват, что повёлся.</p>
       </div>
-      <div class="block">
-        <p><strong>Бесплатный деф</strong> — только для мирных.</p>
-        <p>Подпишись: <a href="https://t.me/gerlovih" target="_blank">@gerlovih</a></p>
-        <p>В био: <code>мой деф @aptANGEL</code></p>
-        <p><strong>Не мирным — 5$ навсегда.</strong></p>
-      </div>
-      <div class="block">
-        <p>Если ты скамер — и тебя снесли даже после оплаты — сам виноват. Помочь могу, но гарантий 0.</p>
-        <p>Если тебя скамнули — тоже не пиши. Базар был до.</p>
-      </div>
-      <div class="terminal">
+
+      <div class="sudo-terminal" aria-label="sudo terminal block" tabindex="0">
+        <div class="sudo-title">───[герлов]───</div>
         Герлов | @aptANGEL
-        Возраст: 1*
-        Происхождение: неизвестно
-        Каста: OSINT
-        Проект: t.me/degniu_def
-        Статус: В КМ
-        Клан: #харизма
-        Тег: @aptANGEL
+        <br>Age: 1*
+        <br>Origin: 🪐
+        <br>Kasta: OSINT
+        <br>Project: <a href="https://t.me/degniu_def" target="_blank" rel="noopener noreferrer">@degniu_def</a>
+        <br>Status: V KM
+        <br><br>Клан: #харизма
+        <br><br>теги: @aptANGEL
+        <br><br><strong>ПРОСЬБА</strong>
+        <br>Не пишите мне, что якобы на меня был заказан докс, мне пизд@ и ко мне едет сват — мне кристаллически поху* на все ваши липы, прозвоны и всю прочую хуйню. Всё это говно сразу летит в мусорку.
+        <br>Ты — обычный мамкин доксер, лет 13 от силы, и как только за тобой реально придут, ты зассышь и моментально сольёшься. Так что не трать ни своё, ни моё время — в ЧС или в вечный игнор.
+      </div>
 
-        ПРОСЬБА:
-        Не пиши мне про то что на меня едет сват или я уже лежу в доксбине и прочую хуйню. Мне вообще похуй. 
-        Вся эта хуета сразу летит в помойку.
-        Ты — манядоксер, лет 12. Когда те будет реально пиздец сразу сольешся.
+    </section>
+
+    <!-- PRICE -->
+    <section id="price" role="region" aria-label="Price list">
+      <h2>PRICE</h2>
+      <div class="price-item" tabindex="0">Запугать обидчика — <strong>3$</strong></div>
+      <div class="price-item" tabindex="0">Фулл пробив — <strong>7$</strong></div>
+      <div class="price-item" tabindex="0">ФИО + номер — <strong>3$</strong></div>
+      <div class="price-item" tabindex="0">СНОС АККАУНТОВ — <span style="color: #ff4444;">НЕ ДЕЛАЮ</span></div>
+
+      <h3 style="margin-top: 35px; color: #8b0000; text-shadow: 0 0 12px #8b0000;">Также продаю:</h3>
+      <ul>
+        <li>— софты</li>
+        <li>— тулки</li>
+        <li>— обучения</li>
+        <li>— видео-обучения по доксу</li>
+      </ul>
+      <p>Оплата: <strong>@send</strong></p>
+    </section>
+
+    <!-- SHOP -->
+    <section id="shop" role="region" aria-label="Shop">
+      <h2>SHOP</h2>
+      <div class="price-item" tabindex="0">
+        <p><strong>Также имею Физ Шоп, где продаю номера разных стран.</strong></p>
+        <p>сам Шоп: <a href="https://t.me/gerlov_shop" target="_blank" rel="noopener noreferrer">@gerlovshop</a></p>
+        <p>Деф для не мирных — <strong>$5 (навсегда)</strong></p>
       </div>
     </section>
 
-    <section id="price">
-      <h2>PRICE</h2>
-      <div class="block">Запугать обидчика — <strong>2$</strong></div>
-      <div class="block">Фулл пробив — <strong>6$</strong></div>
-      <div class="block">ФИО + номер — <strong>2$</strong></div>
-      <div class="block">Снос аккаунтов — <strong>НЕ ДЕЛАЮ</strong></div>
-      <h3 style="margin-top: 30px; color: #bbb;">Также продаю:</h3>
-      <ul>
-        <li>софты</li>
-        <li>тулки</li>
-        <li>обучения</li>
-        <li>видео по доксу</li>
-      </ul>
-      <p><strong>Оплата:</strong> @send</p>
-    </section>
-
-    <section id="contact">
+    <!-- CONTACT -->
+    <section id="contact" role="region" aria-label="Contact info">
       <h2>CONTACT</h2>
       <p>Связь: <strong>@aptANGEL</strong></p>
     </section>
   </main>
+
   <footer>
-    &copy; Герлов. 
+    &copy; GERLOV 
   </footer>
-  <script>
-    function showTab(id, el) {
-      document.querySelectorAll('main section').forEach(sec => sec.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-      el.classList.add('active');
+
+<script>
+  // Переключение вкладок
+  function showTab(tabId, el) {
+    document.querySelectorAll('main section').forEach(section => {
+      section.classList.remove('active');
+      section.style.opacity = 0;
+    });
+    const activeSection = document.getElementById(tabId);
+    activeSection.classList.add('active');
+    setTimeout(() => {
+      activeSection.style.opacity = 1;
+    }, 60);
+    document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Канвас фон с частицами и 3D-параллаксом по мыши
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+
+  let width, height;
+  let mouseX = 0, mouseY = 0;
+  let centerX = 0, centerY = 0;
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    centerX = width / 2;
+    centerY = height / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  window.addEventListener('mousemove', e => {
+    mouseX = (e.clientX - centerX) / centerX;
+    mouseY = (e.clientY - centerY) / centerY;
+  });
+
+  class Particle {
+    constructor() {
+      this.reset();
+      this.alphaPulse = Math.random() * Math.PI * 2;
     }
-  </script>
+    reset() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.z = Math.random() * width;
+      this.size = Math.random() * 1.2 + 0.3;
+      this.speed = 0.008 + Math.random() * 0.015;
+    }
+    update(deltaTime) {
+      this.z -= this.speed * deltaTime;
+      if (this.z <= 1) this.reset();
+      this.alphaPulse += 0.03 * deltaTime;
+    }
+    draw(ctx) {
+      const parallaxX = mouseX * 25 * (1 - this.z / width);
+      const parallaxY = mouseY * 25 * (1 - this.z / width);
+
+      const sx = (this.x - centerX) * (width / this.z) + centerX + parallaxX;
+      const sy = (this.y - centerY) * (width / this.z) + centerY + parallaxY;
+      const radius = this.size * (width / this.z);
+
+      // Пульсация прозрачности для мягкости свечения
+      const alphaBase = 0.15 + 0.5 * (1 - this.z / width);
+      const alpha = alphaBase + 0.15 * Math.sin(this.alphaPulse);
+      
+      ctx.beginPath();
+      ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(140, 0, 0, ${alpha.toFixed(2)})`;
+      ctx.shadowColor = `rgba(140, 0, 0, ${alpha.toFixed(2)})`;
+      ctx.shadowBlur = 6 + 6 * Math.sin(this.alphaPulse);
+      ctx.fill();
+    }
+  }
+
+  const particles = [];
+  for (let i = 0; i < 120; i++) {
+    particles.push(new Particle());
+  }
+
+  let lastTime = 0;
+  function animate(time = 0) {
+    const deltaTime = (time - lastTime) / 16.67;
+    lastTime = time;
+
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => {
+      p.update(deltaTime);
+      p.draw(ctx);
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Мягкий звук клика на интерактивные элементы
+  let audioCtx;
+  function playUltraSoftClick() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, now);
+
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.015, now + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.05);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.05);
+
+    osc.onended = () => {
+      gain.disconnect();
+      osc.disconnect();
+    };
+  }
+
+  // Звук и масштаб на hover/click для nav a, .price-item, .sudo-terminal
+  document.querySelectorAll('nav a, .price-item, .sudo-terminal').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      playUltraSoftClick();
+      el.style.transform = 'scale(1.03)';
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    });
+    el.addEventListener('click', () => {
+      playUltraSoftClick();
+      el.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        el.style.transform = '';
+      }, 150);
+    });
+  });
+</script>
 </body>
 </html>
